@@ -180,8 +180,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac94e6cee4ba3f949980d1bd1140dbbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 8
-  height: 8
+  width: 16
+  height: 16
+  mineCount: 32
+  colors:
+  - blue
+  - red
+  - purple
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
