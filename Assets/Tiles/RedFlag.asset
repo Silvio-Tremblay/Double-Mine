@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: RedFlag
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: 5e959852275b07647805faba0db1afef, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4ccce2e4610363946bde7b40dbd564b0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1

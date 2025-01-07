@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: PurpleBomb
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: 898e212066403a64486ffe5c180202e3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0e4d5cc44575a244683f0af19aeff555, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1

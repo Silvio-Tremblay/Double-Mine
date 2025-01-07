@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: PurpleTile3
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: 66cc99a1cd87e9145950c2bbd01ca981, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d70248974a049bb4e8743a9af29ddb99, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
