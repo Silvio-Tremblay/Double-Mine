@@ -132,6 +132,7 @@ GameObject:
   m_Component:
   - component: {fileID: 193420820}
   - component: {fileID: 193420819}
+  - component: {fileID: 193420821}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -167,6 +168,20 @@ Transform:
   - {fileID: 1603956180}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &193420821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 193420818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac94e6cee4ba3f949980d1bd1140dbbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  width: 8
+  height: 8
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,6 +285,7 @@ GameObject:
   - component: {fileID: 1603956180}
   - component: {fileID: 1603956182}
   - component: {fileID: 1603956181}
+  - component: {fileID: 1603956183}
   m_Layer: 0
   m_Name: Tilemap
   m_TagString: Untagged
@@ -379,6 +395,51 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &1603956183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1603956179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4a54e5ac7a4b43498ad1754dfb43e6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileUnkown: {fileID: 11400000, guid: 832e0ff1bb1157248ac549451e81ea0b, type: 2}
+  tileEmpty: {fileID: 11400000, guid: 57d3db521326f5b49b16d541a3c32826, type: 2}
+  tileExploded: {fileID: 11400000, guid: 54a211972919d1743af9f73fe28cfb87, type: 2}
+  tileBlueMine: {fileID: 11400000, guid: b15d88f47ea02ee44ad696f5c5cc8f58, type: 2}
+  tileBlueFlag: {fileID: 11400000, guid: 0e020a3df2eea1941977c117a7f4fed4, type: 2}
+  tileBlueNum1: {fileID: 11400000, guid: 8444cb7a34342394793ad2a809806d4b, type: 2}
+  tileBlueNum2: {fileID: 11400000, guid: 4a5973ab6cc492d448325f4992028917, type: 2}
+  tileBlueNum3: {fileID: 11400000, guid: 90f90ad40d5c3be4788510293527e2e7, type: 2}
+  tileBlueNum4: {fileID: 11400000, guid: 042c266e43f760348b0faa6f5960f261, type: 2}
+  tileBlueNum5: {fileID: 11400000, guid: e90df74ba8c0a584fad4b27ead6ee898, type: 2}
+  tileBlueNum6: {fileID: 11400000, guid: eaa17cea1537bb14baac46a13083c59a, type: 2}
+  tileBlueNum7: {fileID: 11400000, guid: 7d985d2b6c363fe45a7cb2644994188b, type: 2}
+  tileBlueNum8: {fileID: 11400000, guid: b44f7b58cc6b7a745bd2b5a26feb6af4, type: 2}
+  tileRedMine: {fileID: 11400000, guid: 57b72a4bb7f9dca48a364c17d30a87bf, type: 2}
+  tileRedFlag: {fileID: 11400000, guid: ada92e9390066a34a99e419643bdf307, type: 2}
+  tileRedNum1: {fileID: 11400000, guid: 41e28b0f4e720214eabe0c4d6c11573c, type: 2}
+  tileRedNum2: {fileID: 11400000, guid: b4fcf483b58f4b3478ea54393e4f0f23, type: 2}
+  tileRedNum3: {fileID: 11400000, guid: 1fde32b8db8d52343a93ea71279dacf8, type: 2}
+  tileRedNum4: {fileID: 11400000, guid: 3798ab3519c468b46b9e66f4bb88b161, type: 2}
+  tileRedNum5: {fileID: 11400000, guid: 415a6066d0c0dc44180872b1526bea49, type: 2}
+  tileRedNum6: {fileID: 11400000, guid: dcc5cf3d9ea1aea46810ecc8965116d5, type: 2}
+  tileRedNum7: {fileID: 11400000, guid: 061cc85bdb4698448a1c140a25df1107, type: 2}
+  tileRedNum8: {fileID: 11400000, guid: 3ed522be73574404aa9fb4cd2953645c, type: 2}
+  tilePurpleMine: {fileID: 11400000, guid: 5b1fdc0aae9edb049ae2449c28346346, type: 2}
+  tilePurpleFlag: {fileID: 11400000, guid: 5e06e4f5503520049bd625b5c6efcdcc, type: 2}
+  tilePurpleNum1: {fileID: 11400000, guid: 66352d497a473ad489c204ee8cc40cf4, type: 2}
+  tilePurpleNum2: {fileID: 11400000, guid: a05b720bc3bc9bf409808409ab36cf5a, type: 2}
+  tilePurpleNum3: {fileID: 11400000, guid: b794fbd39db02214eb0872aa098c5efa, type: 2}
+  tilePurpleNum4: {fileID: 11400000, guid: 1ec84dc0e4727634fb7087c1142acea1, type: 2}
+  tilePurpleNum5: {fileID: 11400000, guid: 81ce5f91c1a886749ad6248f23947cb6, type: 2}
+  tilePurpleNum6: {fileID: 11400000, guid: 1747a7bb203af3a4c932fb1ef1babe15, type: 2}
+  tilePurpleNum7: {fileID: 11400000, guid: 872a27833c835bb49b96857dfaa2b2f2, type: 2}
+  tilePurpleNum8: {fileID: 11400000, guid: 143c479af79a2c340aa01c814bd97247, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
