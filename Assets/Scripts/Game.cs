@@ -4,9 +4,9 @@ using UnityEngine.UI;
 
 public class Game : MonoBehaviour
 {
-   public int width = 16;
-   public int height = 16;
-   public int mineCount = 32;
+   public int width = 8;
+   public int height = 8;
+   public int mineCount = 16;
 
    public String[] colors = {"blue", "red", "purple"};
 
@@ -19,6 +19,7 @@ public class Game : MonoBehaviour
    public float mouseScrollY;
    private Board board;
    private Cell[,] state;
+   private bool gameOver;
 
    private void Awake()
    {
@@ -33,6 +34,7 @@ public class Game : MonoBehaviour
    private void NewGame()
    {
         state = new Cell[width, height];
+        gameOver = false;
 
         GenerateCells();
         GenerateMines();
@@ -188,17 +190,22 @@ public class Game : MonoBehaviour
 
    private void Update()
    {
-     if (Input.GetKeyDown(KeyCode.Alpha1)) {
-          flagColor = FlagColor.Blue;
+     if (Input.GetKeyDown(KeyCode.R)) {
+          NewGame();
      }
-     if (Input.GetKeyDown(KeyCode.Alpha2)) {
-          flagColor = FlagColor.Red;
-     }
-     if (Input.GetMouseButtonDown(1))
-     {
-          Flag();
-     } else if (Input.GetMouseButtonDown(0)) {
-          Reveal();
+     else if (!gameOver) {
+          if (Input.GetKeyDown(KeyCode.Alpha1)) {
+               flagColor = FlagColor.Blue;
+          }
+          if (Input.GetKeyDown(KeyCode.Alpha2)) {
+               flagColor = FlagColor.Red;
+          }
+          if (Input.GetMouseButtonDown(1))
+          {
+               Flag();
+          } else if (Input.GetMouseButtonDown(0)) {
+               Reveal();
+          }
      }
    }
 
@@ -233,12 +240,23 @@ public class Game : MonoBehaviour
           return;
      }
 
-     if (cell.type == Cell.Type.Empty) {
-          Flood(cell);
+     switch (cell.type)
+     {
+          case Cell.Type.Mine: 
+               Explode(cell);
+               break;
+          case Cell.Type.Empty:
+               Flood(cell);
+               CheckWinCondition();
+               break;
+          default:
+               cell.revealed = true;
+               state[cellPosition.x, cellPosition.y] = cell;
+               CheckWinCondition();
+               break;
+
      }
 
-     cell.revealed = true;
-     state[cellPosition.x, cellPosition.y] = cell;
      board.Draw(state);
    }
 
@@ -264,6 +282,63 @@ public class Game : MonoBehaviour
      }
    }
 
+   private void Explode(Cell cell)
+   {
+     gameOver = true;
+     Debug.Log("You Lost! Press \"R\" to play again!");
+     cell.revealed = true;
+     cell.exploded = true;
+     state[cell.position.x, cell.position.y] = cell;
+
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            Cell currentCell = state[x, y];
+
+            if (currentCell.blueFlagged || currentCell.redFlagged)
+            {
+                continue;
+            }
+
+            if (currentCell.type == Cell.Type.Mine)
+            {
+                currentCell.revealed = true;
+                state[x, y] = currentCell;
+            }
+        }
+    }
+
+    board.Draw(state);
+   }
+
+   private void CheckWinCondition()
+   {
+     int score = 0;
+     for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            Cell cell = state[x, y];
+            if (cell.type != Cell.Type.Mine && !cell.revealed) {
+               return;
+            }
+            if (cell.type == Cell.Type.Mine && cell.color.Equals("blue") && cell.blueFlagged) {
+               score++;
+               continue;
+            }
+            if (cell.type == Cell.Type.Mine && cell.color.Equals("red") && cell.redFlagged) {
+               score++;
+            }
+        }
+    }
+
+    gameOver = true;
+    Debug.Log("You Won! Total Score: " + score + ". Press \"R\" to play again!");
+    
+
+   }
+
    private Cell GetCell(int x, int y)
    {
      if (IsValid(x, y)) {
@@ -278,6 +353,4 @@ public class Game : MonoBehaviour
      return x >= 0 && x < width && y >= 0 && y < height; 
      
    }
-
-
 }

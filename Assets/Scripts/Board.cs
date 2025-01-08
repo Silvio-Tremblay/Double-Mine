@@ -89,7 +89,7 @@ public class Board : MonoBehaviour
         switch (cell.type)
         {  
             case Cell.Type.Empty: return tileEmpty;
-            case Cell.Type.Mine: return coloredTiles[cell.color][0];
+            case Cell.Type.Mine: return cell.exploded? tileExploded : coloredTiles[cell.color][0];
             case Cell.Type.Number: return coloredTiles[cell.color][cell.number+1];
             default: return null;
         }
