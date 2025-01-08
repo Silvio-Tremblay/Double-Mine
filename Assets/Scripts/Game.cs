@@ -10,16 +10,22 @@ public class Game : MonoBehaviour
 
    public String[] colors = {"blue", "red", "purple"};
 
-   public enum FlagColor {
-          Blue,
-          Red
-   }
+public enum FlagColor {
+           Blue,
+           Red
+}
 
-   public FlagColor flagColor = FlagColor.Blue;
-   public float mouseScrollY;
-   private Board board;
-   private Cell[,] state;
-   private bool gameOver;
+public FlagColor flagColor = FlagColor.Blue;
+public float mouseScrollY;
+private Board board;
+private Cell[,] grid;
+
+private bool generated;
+
+private int firstTileX;
+
+private int firstTileY;
+private bool gameOver;
 
    private void Awake()
    {
@@ -33,15 +39,16 @@ public class Game : MonoBehaviour
 
    private void NewGame()
    {
-        state = new Cell[width, height];
-        gameOver = false;
 
-        GenerateCells();
-        GenerateMines();
-        GenerateNumbers();
+        StopAllCoroutines();
 
         Camera.main.transform.position = new Vector3(width / 2f, height / 2f, -10);
-        board.Draw(state);
+        gameOver = false;
+        generated = false;
+
+        grid = new Cell[width, height];   
+        GenerateCells();     
+        board.Draw(grid);
    }
 
    private void GenerateCells()
@@ -53,12 +60,22 @@ public class Game : MonoBehaviour
                Cell cell = new Cell();
                cell.position = new Vector3Int(x, y, 0);
                cell.type = Cell.Type.Empty;
-               state[x, y] = cell;
+               grid[x, y] = cell;
           }
         }
    }
 
-   private void GenerateMines()
+   private void GenerateOtherTiles(Cell startingCell)
+   {
+     if (generated) return;
+
+     GenerateMines(startingCell);
+     GenerateNumbers();
+
+     generated = true;
+   }
+
+   private void GenerateMines(Cell startingCell)
    {
           for (int i = 0; i < mineCount; i++)
           {
@@ -66,14 +83,28 @@ public class Game : MonoBehaviour
                int y = UnityEngine.Random.Range(0, height);
                String color = colors[UnityEngine.Random.Range(0, 2)];
 
-               while(state[x, y].type == Cell.Type.Mine)
+               Cell cell = grid[x, y];
+
+               while (cell.type == Cell.Type.Mine || IsAdjacent(startingCell, cell))
                {
-                    x = UnityEngine.Random.Range(0, width);
-                    y = UnityEngine.Random.Range(0, height);
+                    x++;
+
+                    if (x >= width)
+                    {
+                         x = 0;
+                         y++;
+
+                         if (y >= height) {
+                         y = 0;
+                         }
+                    }
+
+                    cell = grid[x, y];
                }
 
-               state[x, y].type = Cell.Type.Mine;
-               state[x, y].color = color;
+
+               cell.type = Cell.Type.Mine;
+               cell.color = color;
           }
    }
 
@@ -83,7 +114,7 @@ public class Game : MonoBehaviour
         {
                for (int y = 0; y < height; y++)
                {
-                    Cell cell = state[x, y];
+                    Cell cell = grid[x, y];
                     if (cell.type == Cell.Type.Mine)
                     {
                     continue;
@@ -95,7 +126,7 @@ public class Game : MonoBehaviour
                     {
                          cell.type = Cell.Type.Number;
                          cell.color = NumberColor(x, y);
-                         state[x, y] = cell;
+                         grid[x, y] = cell;
                          
                     }
                     
@@ -124,7 +155,7 @@ public class Game : MonoBehaviour
                     continue;
                }
 
-               if (state[x, y].type == Cell.Type.Mine)
+               if (grid[x, y].type == Cell.Type.Mine)
                {
                     count++;
 
@@ -211,13 +242,8 @@ public class Game : MonoBehaviour
 
    private void Flag()
    {
-     Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-     Vector3Int cellPosition = board.tilemap.WorldToCell(worldPosition);
-     Cell cell = GetCell(cellPosition.x, cellPosition.y);
-
-     if (cell.type == Cell.Type.Invalid || cell.revealed) {
-          return;
-     }
+     if (IsMouseOnCell(out Cell cell)) return;
+     if (cell.revealed) return;
 
      if (flagColor == FlagColor.Blue) {
           cell.redFlagged = false;
@@ -226,17 +252,22 @@ public class Game : MonoBehaviour
           cell.blueFlagged = false;
           cell.redFlagged = !cell.redFlagged;
      }
-     state[cellPosition.x, cellPosition.y] = cell;
-     board.Draw(state);
+     board.Draw(grid);
    }
 
    private void Reveal()
    {
-     Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-     Vector3Int cellPosition = board.tilemap.WorldToCell(worldPosition);
-     Cell cell = GetCell(cellPosition.x, cellPosition.y);
+     if (IsMouseOnCell(out Cell cell)) {
+          if (!generated) {
+               GenerateOtherTiles(cell);
+          }
+          Reveal(cell);
+     }
+   }
 
-     if (cell.type == Cell.Type.Invalid || cell.revealed || cell.blueFlagged || cell.redFlagged) {
+   private void Reveal(Cell cell)
+   {
+     if (cell.revealed || cell.blueFlagged || cell.redFlagged) {
           return;
      }
 
@@ -251,34 +282,64 @@ public class Game : MonoBehaviour
                break;
           default:
                cell.revealed = true;
-               state[cellPosition.x, cellPosition.y] = cell;
                CheckWinCondition();
                break;
 
      }
 
-     board.Draw(state);
+     board.Draw(grid);
    }
 
    private void Flood (Cell cell) 
    {
-     if (cell.revealed || cell.type == Cell.Type.Mine || cell.type == Cell.Type.Invalid) {
+     if (cell.revealed || cell.type == Cell.Type.Mine) {
           return;
      }
 
      cell.revealed = true;
-     state[cell.position.x, cell.position.y] = cell;
+     grid[cell.position.x, cell.position.y] = cell;
 
      if (cell.type == Cell.Type.Empty) {
-          
-          Flood(GetCell(cell.position.x - 1, cell.position.y));
-          Flood(GetCell(cell.position.x + 1, cell.position.y));
-          Flood(GetCell(cell.position.x, cell.position.y - 1));
-          Flood(GetCell(cell.position.x, cell.position.y + 1));
-          Flood(GetCell(cell.position.x - 1, cell.position.y - 1));
-          Flood(GetCell(cell.position.x - 1, cell.position.y + 1));
-          Flood(GetCell(cell.position.x + 1, cell.position.y - 1));
-          Flood(GetCell(cell.position.x + 1, cell.position.y + 1));
+
+          Cell adjacentCell = GetCell(cell.position.x - 1, cell.position.y);
+          if (adjacentCell != null) {
+               Flood(adjacentCell);
+          }
+
+          adjacentCell = GetCell(cell.position.x + 1, cell.position.y);
+          if (adjacentCell != null) {
+               Flood(adjacentCell);
+          }
+
+          adjacentCell = GetCell(cell.position.x, cell.position.y - 1);
+          if (adjacentCell != null) {
+               Flood(adjacentCell);
+          }
+
+          adjacentCell = GetCell(cell.position.x, cell.position.y + 1);
+          if (adjacentCell != null) {
+               Flood(adjacentCell);
+          }
+
+          adjacentCell = GetCell(cell.position.x - 1, cell.position.y - 1);
+          if (adjacentCell != null) {
+               Flood(adjacentCell);
+          }
+
+          adjacentCell = GetCell(cell.position.x - 1, cell.position.y + 1);
+          if (adjacentCell != null) {
+               Flood(adjacentCell);
+          }
+
+          adjacentCell = GetCell(cell.position.x + 1, cell.position.y - 1);
+          if (adjacentCell != null) {
+               Flood(adjacentCell);
+          }
+
+          adjacentCell = GetCell(cell.position.x + 1, cell.position.y + 1);
+          if (adjacentCell != null) {
+               Flood(adjacentCell);
+          }
      }
    }
 
@@ -288,13 +349,13 @@ public class Game : MonoBehaviour
      Debug.Log("You Lost! Press \"R\" to play again!");
      cell.revealed = true;
      cell.exploded = true;
-     state[cell.position.x, cell.position.y] = cell;
+     grid[cell.position.x, cell.position.y] = cell;
 
     for (int x = 0; x < width; x++)
     {
         for (int y = 0; y < height; y++)
         {
-            Cell currentCell = state[x, y];
+            Cell currentCell = grid[x, y];
 
             if (currentCell.blueFlagged || currentCell.redFlagged)
             {
@@ -304,12 +365,12 @@ public class Game : MonoBehaviour
             if (currentCell.type == Cell.Type.Mine)
             {
                 currentCell.revealed = true;
-                state[x, y] = currentCell;
+                grid[x, y] = currentCell;
             }
         }
     }
 
-    board.Draw(state);
+    board.Draw(grid);
    }
 
    private void CheckWinCondition()
@@ -319,7 +380,7 @@ public class Game : MonoBehaviour
     {
         for (int y = 0; y < height; y++)
         {
-            Cell cell = state[x, y];
+            Cell cell = grid[x, y];
             if (cell.type != Cell.Type.Mine && !cell.revealed) {
                return;
             }
@@ -342,10 +403,16 @@ public class Game : MonoBehaviour
    private Cell GetCell(int x, int y)
    {
      if (IsValid(x, y)) {
-          return state[x, y];
+          return grid[x, y];
      } else {
-          return new Cell();
+          return null;
      }     
+   }
+
+   private bool IsCellValid(int x, int y, out Cell cell)
+   {
+     cell = GetCell(x, y);
+     return cell != null;
    }
 
    private bool IsValid(int x, int y)
@@ -353,4 +420,17 @@ public class Game : MonoBehaviour
      return x >= 0 && x < width && y >= 0 && y < height; 
      
    }
+
+   private bool IsMouseOnCell(out Cell cell)
+    {
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3Int cellPosition = board.tilemap.WorldToCell(worldPosition);
+        return IsCellValid(cellPosition.x, cellPosition.y, out cell);
+    }
+
+    private bool IsAdjacent(Cell a, Cell b)
+    {
+          return Mathf.Abs(a.position.x - b.position.x) <= 1 &&
+               Mathf.Abs(a.position.y - b.position.y) <= 1;
+    }
 }
